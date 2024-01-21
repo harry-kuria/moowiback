@@ -11,6 +11,7 @@ const numberToWords = require('number-to-words');
 var wrap = require('word-wrap');
 const { PDFDocument, rgb, PDFFont,StandardFonts, TextAlignment } = require('pdf-lib');
 const fontkit = require("@pdf-lib/fontkit");
+const { createCanvas } = require('canvas');
 
 //const PDFTronLicense = require('./LicenseKey/LicenseKey');
 
@@ -124,6 +125,27 @@ const replaceText = async (totals) => {
 };
 
 
+function getTextWidth(text, fontSize, font) {
+  const canvas = createCanvas(1000, 1000); // Create a virtual canvas
+  const context = canvas.getContext('2d');
+  context.font = `${fontSize}px ${font}`; // Set the font for the context
+  const width = context.measureText(text).width; // Measure the width of the text
+  return width;
+}
+
+// Draw the right-aligned text
+function drawTextRightAligned(page, text, x, y, maxWidth, font, fontSize) {
+  const textWidth = getTextWidth(text, font, fontSize); // Calculate the width of the text
+  const adjustedX = x - Math.min(textWidth, maxWidth); // Calculate the adjusted x-coordinate to fit the text within the required margin
+  page.drawText(text, {
+      x: adjustedX,
+      y: y,
+      size: fontSize,
+      font: font,
+      wordBreaks: [" "],
+      color: rgb(0, 0, 0),
+  });
+}
 
 app.post('/api/generate_invoice', (req, res) => {
   const { landTotal, buildingTotal,furnitureTotal,computerTotal,mvTotal,electronicTotal,grandTotal,totalLandAndBuildings,institution,fCEBIM } = req.body;
@@ -165,33 +187,26 @@ const finalDate = date + "/" + month + "/" + year;
       const thirdPage = pages[2];
       const { width, height } = firstPage.getSize();
       const fCEBIMWords1 = numberToWords.toWords(fCEBIM).toUpperCase();
-      firstPage.drawText(landTotal.toLocaleString(), {
-        x: 450,
-        y: 595,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0),
-        TextAlignment: TextAlignment.Right,
-      })
-      firstPage.drawText(buildingTotal.toLocaleString(), {
-        x: 457,
-        y: 565,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      firstPage.drawText(totalLandAndBuildings.toLocaleString(), {
-        x: 450,
-        y: 535,
-        size: 12,
-        font:timesroman_bold,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
+      
+      drawTextRightAligned(firstPage, landTotal.toLocaleString(),520, 595,100,timesroman,12);
+      drawTextRightAligned(firstPage, buildingTotal.toLocaleString(), 520, 565, 100, timesroman, 12);
+      drawTextRightAligned(firstPage, totalLandAndBuildings.toLocaleString(),520, 535,100,timesroman_bold,12);
+      drawTextRightAligned(secondPage, furnitureTotal.toLocaleString(),530, 545,100,timesroman,12);
+      drawTextRightAligned(secondPage, computerTotal.toLocaleString(),530, 505,100,timesroman,12);
+      drawTextRightAligned(secondPage, electronicTotal.toLocaleString(),530, 475,100,timesroman,12);
+      drawTextRightAligned(secondPage, '54,000',530, 445,100,timesroman,12);
+      drawTextRightAligned(secondPage, '23,000',530, 413,100,timesroman,12);
+      drawTextRightAligned(secondPage, mvTotal.toLocaleString(),530, 375,100,timesroman,12);
+      drawTextRightAligned(secondPage, fCEBIM.toLocaleString(),530, 345,100,timesroman_bold,12);
+      drawTextRightAligned(thirdPage, landTotal.toLocaleString(),540, 455,100,timesroman,12);
+      drawTextRightAligned(thirdPage, buildingTotal.toLocaleString(),540, 435,100,timesroman,12);
+      drawTextRightAligned(thirdPage, furnitureTotal.toLocaleString(),540, 415,100,timesroman,12);
+      drawTextRightAligned(thirdPage, computerTotal.toLocaleString(),540, 395,100,timesroman,12);
+      drawTextRightAligned(thirdPage, electronicTotal.toLocaleString(),540, 375,100,timesroman,12);
+      drawTextRightAligned(thirdPage, '54,000',540, 355,100,timesroman,12);
+      drawTextRightAligned(thirdPage, mvTotal.toLocaleString(),540, 335,100,timesroman,12);
+      drawTextRightAligned(thirdPage, '23,000',540, 315,100,timesroman,12);
+      drawTextRightAligned(thirdPage, grandTotal.toLocaleString(),540, 295,100,timesroman_bold,12);
       const totalLandAndBuildingsWords = numberToWords.toWords(totalLandAndBuildings).toUpperCase();
       firstPage.drawText("KENYA SHILLINGS "+ totalLandAndBuildingsWords + " ONLY", {
         x: 75,
@@ -212,81 +227,7 @@ const finalDate = date + "/" + month + "/" + year;
         color: rgb(0, 0, 0), 
         TextAlignment: TextAlignment.Right,
       })
-      secondPage.drawText(furnitureTotal.toLocaleString(), {
-        x: 530,
-        y: 545,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        align: 'left',
-      })
-      secondPage.drawText(computerTotal.toLocaleString(), {
-        x: 530,
-        y: 505,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        align: 'left',
-      })
-      secondPage.drawText(electronicTotal.toLocaleString(), {
-        x: 530,
-        y: 475,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        align: 'right',
-      })
-      secondPage.drawText('54,000000', {
-        x: 530,
-        y: 445,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        align: 'right',
-      })
-      const boxWidth = 90;
-  const boxHeight = 10;
-  const boxX = 510;
-  const boxY = 413;
-  secondPage.drawRectangle({
-    x: boxX,
-    y: boxY,
-    width: boxWidth,
-    height: boxHeight,
-    borderColor: rgb(1, 0, 0),
-  });
-      secondPage.drawText('23000,000', {
-        x: 530,
-    y: 413,
-        size: 12,
-        font:timesroman,
-        wordBreaks: [" "],
-        color: rgb(0, 0, 0),
-        width: 10,
-        TextAlignment:TextAlignment.Right,
-      })
-      secondPage.drawText(mvTotal.toLocaleString(), {
-        x: 530,
-        y: 375,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        align: 'right',
-      })
-      secondPage.drawText(fCEBIM.toLocaleString(), {
-        x: 515,
-        y: 345,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
+      
       secondPage.drawText(finalDate, {
         x: 103,
         y: 153,
@@ -323,87 +264,6 @@ const finalDate = date + "/" + month + "/" + year;
       thirdPage.drawText(finalDate, {
         x: 485,
         y: 670,
-        size: 12,
-        font:timesroman_bold,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(landTotal.toLocaleString(), {
-        x: 485,
-        y: 455,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(buildingTotal.toLocaleString(), {
-        x: 495,
-        y: 435,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(furnitureTotal.toLocaleString(), {
-        x: 515,
-        y: 415,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(computerTotal.toLocaleString(), {
-        x: 505,
-        y: 395,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(electronicTotal.toLocaleString(), {
-        x: 520,
-        y: 375,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText('54,000', {
-        x: 520,
-        y: 355,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(mvTotal.toLocaleString(), {
-        x: 500,
-        y: 335,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText('23,000', {
-        x: 520,
-        y: 315,
-        size: 12,
-        font:timesroman,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(grandTotal.toLocaleString(), {
-        x: 485,
-        y: 295,
         size: 12,
         font:timesroman_bold,
         maxWidth: 500, wordBreaks: [" "],
