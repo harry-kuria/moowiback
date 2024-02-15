@@ -148,7 +148,7 @@ function drawTextRightAligned(page, text, x, y, maxWidth, font, fontSize) {
 }
 
 app.post('/api/generate_invoice', (req, res) => {
-  const { landTotal, buildingTotal,furnitureTotal,computerTotal,mvTotal,electronicTotal,grandTotal,totalLandAndBuildings,institution,fCEBIM } = req.body;
+  const { landTotal, buildingTotal,biologicalAssetsTotal, intangibleAssetsTotal, furnitureTotal,computerTotal,mvTotal,equipmentTotal,grandTotal,totalLandAndBuildings,institution,fCEBIM } = req.body;
   const inputPath = path.resolve(__dirname, './files/Moowi_Certificate.pdf');
   const outputPath = path.resolve(__dirname, './files/Moowi_Valuation_Certificate.pdf');
   const fontPath = path.resolve(__dirname, './files/times_new_roman.ttf');
@@ -183,65 +183,34 @@ const finalDate = date + "/" + month + "/" + year;
       const timesroman_bold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
       const pages = pdfDoc.getPages()
       const firstPage = pages[0];
-      const secondPage = pages[1];
-      const thirdPage = pages[2];
       const { width, height } = firstPage.getSize();
       const fCEBIMWords1 = numberToWords.toWords(fCEBIM).toUpperCase();
       
-      drawTextRightAligned(firstPage, landTotal.toLocaleString(),520, 595,100,timesroman,12);
-      drawTextRightAligned(firstPage, buildingTotal.toLocaleString(), 520, 565, 100, timesroman, 12);
-      drawTextRightAligned(firstPage, totalLandAndBuildings.toLocaleString(),520, 535,100,timesroman_bold,12);
-      drawTextRightAligned(secondPage, furnitureTotal.toLocaleString(),530, 545,100,timesroman,12);
-      drawTextRightAligned(secondPage, computerTotal.toLocaleString(),530, 505,100,timesroman,12);
-      drawTextRightAligned(secondPage, electronicTotal.toLocaleString(),530, 475,100,timesroman,12);
-      drawTextRightAligned(secondPage, '54,000',530, 445,100,timesroman,12);
-      drawTextRightAligned(secondPage, '23,000',530, 413,100,timesroman,12);
-      drawTextRightAligned(secondPage, mvTotal.toLocaleString(),530, 375,100,timesroman,12);
-      drawTextRightAligned(secondPage, fCEBIM.toLocaleString(),530, 345,100,timesroman_bold,12);
-      drawTextRightAligned(thirdPage, landTotal.toLocaleString(),540, 455,100,timesroman,12);
-      drawTextRightAligned(thirdPage, buildingTotal.toLocaleString(),540, 435,100,timesroman,12);
-      drawTextRightAligned(thirdPage, furnitureTotal.toLocaleString(),540, 415,100,timesroman,12);
-      drawTextRightAligned(thirdPage, computerTotal.toLocaleString(),540, 395,100,timesroman,12);
-      drawTextRightAligned(thirdPage, electronicTotal.toLocaleString(),540, 375,100,timesroman,12);
-      drawTextRightAligned(thirdPage, '54,000',540, 355,100,timesroman,12);
-      drawTextRightAligned(thirdPage, mvTotal.toLocaleString(),540, 335,100,timesroman,12);
-      drawTextRightAligned(thirdPage, '23,000',540, 315,100,timesroman,12);
-      drawTextRightAligned(thirdPage, grandTotal.toLocaleString(),540, 295,100,timesroman_bold,12);
+      
+      drawTextRightAligned(firstPage, furnitureTotal.toLocaleString(),545, 455,100,timesroman,12);
+      drawTextRightAligned(firstPage, computerTotal.toLocaleString(),545, 435,100,timesroman,12);
+      drawTextRightAligned(firstPage, equipmentTotal.toLocaleString(),545, 420,100,timesroman,12);
+      drawTextRightAligned(firstPage, mvTotal.toLocaleString(),545, 400,100,timesroman,12);
+      drawTextRightAligned(firstPage, biologicalAssetsTotal.toLocaleString(),545, 385,100,timesroman,12);
+      drawTextRightAligned(firstPage, intangibleAssetsTotal.toLocaleString(),545, 365,100,timesroman,12);
+      drawTextRightAligned(firstPage, grandTotal.toLocaleString(),545, 345,100,timesroman_bold,12);
       const totalLandAndBuildingsWords = numberToWords.toWords(totalLandAndBuildings).toUpperCase();
-      firstPage.drawText("KENYA SHILLINGS "+ totalLandAndBuildingsWords + " ONLY", {
-        x: 75,
-        y: 515,
-        size: 12,
-        font:timesroman_bold,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
+      
 
       firstPage.drawText(finalDate, {
-        x: 103,
-        y: 370,
+        x: 163,
+        y: 230,
         size: 12,
         font:timesroman_bold,
         maxWidth: 500, wordBreaks: [" "],
         color: rgb(0, 0, 0), 
         TextAlignment: TextAlignment.Right,
       })
-      
-      secondPage.drawText(finalDate, {
-        x: 103,
-        y: 153,
-        size: 12,
-        font:timesroman_bold,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText('SURVEYED PLOT FOR '+institution+', PROPERTY AND BUILDINGS, COMPUTERS, EQUIPMENTS, FURNITURE AND FITTINGS, BIOLOGICAL ASSETS, and MOTOR VEHICLES as follows:', {
+      firstPage.drawText('On the basis of the foregoing particulars, our terms of reference and relevant factors, it is our considered opinion that the Current Market Values of the Moveable and Immoveable assets(Motor Vehicle, Biological Assets, Intangible Assets, Computers, Furniture and Fittings and Equipment and Machinery within '+institution+', free from any encumbrances whatsoever.', {
         x: 70,
-        y: 596,
+        y: 586,
         size: 12,
-        font:timesroman_bold,
+        font:timesroman,
         maxWidth: 500, wordBreaks: [" "],
         color: rgb(0, 0, 0), 
         TextAlignment: TextAlignment.Right,
@@ -250,9 +219,9 @@ const finalDate = date + "/" + month + "/" + year;
       })
       const grandTotalWords = numberToWords.toWords(grandTotal).toUpperCase();
     
-      thirdPage.drawText('Market Value: '+grandTotalWords , {
+      firstPage.drawText('Market Value: '+grandTotalWords , {
         x: 70,
-        y: 526,
+        y: 516,
         size: 12,
         font:timesroman_bold,
         maxWidth: 500, wordBreaks: [" "],
@@ -261,18 +230,9 @@ const finalDate = date + "/" + month + "/" + year;
         lineHeight: 13
         
       })
-      thirdPage.drawText(finalDate, {
+      firstPage.drawText(finalDate, {
         x: 485,
-        y: 670,
-        size: 12,
-        font:timesroman_bold,
-        maxWidth: 500, wordBreaks: [" "],
-        color: rgb(0, 0, 0), 
-        TextAlignment: TextAlignment.Right,
-      })
-      thirdPage.drawText(finalDate, {
-        x: 103,
-        y: 169,
+        y: 630,
         size: 12,
         font:timesroman_bold,
         maxWidth: 500, wordBreaks: [" "],
@@ -280,15 +240,8 @@ const finalDate = date + "/" + month + "/" + year;
         TextAlignment: TextAlignment.Right,
       })
       
-  secondPage.drawText("KENYA SHILLINGS "+ fCEBIMWords1 + " ONLY", {
-    x: 75,
-    y: 310,
-    size: 12,
-    font:timesroman_bold,
-    maxWidth: 500, wordBreaks: [" "],
-    color: rgb(0, 0, 0),
-    
-  })
+      
+  
 
   const modifiedPdfBytes = await pdfDoc.save();
   fs.writeFileSync(outputPath, modifiedPdfBytes);
@@ -483,7 +436,7 @@ app.post('/api/addMultipleAssets/:assetType', (req, res) => {
     // Validate asset type (optional)
     // Add additional validation logic as needed
     console.log('Received asset type for validation:', assetType);
-const allowedAssetTypes = ['computer', 'electronics','equipment','biologicalassets','furniture', 'motorvehicle', 'building', 'land','other'];
+const allowedAssetTypes = ['computer', 'electronics','equipment','biologicalassets','furniture', 'motorvehicle', 'building', 'land','intangibleassets'];
 const trimmedAssetType = assetType.trim().toLowerCase(); // Trim and convert to lowercase
 console.log('Trimmed and lowercase asset type:', trimmedAssetType);
 
@@ -503,8 +456,8 @@ if (!allowedAssetTypes.includes(trimmedAssetType)) {
       motorvehicle: { table: 'assets', columns: ['assetName', 'assetType','serialNumber','description','purchasePrice','marketValue','manufacturer','modelNumber','location','status','barcode','institutionName','department','functionalArea','logo','vehicleregno','sourceoffunds','enginenumber','chassisnumber','make','purchaseyear','pvnumber','originallocation','currentlocation','replacementdate','amount','depreciationrate','annualdepreciation','accumulateddepreciation','netbookvalue','disposaldate','responsibleofficer','assetcondition' ] },
       motorcycle: { table: 'assets', columns: ['assetName', 'assetType','serialNumber','description','purchasePrice','marketValue','manufacturer','modelNumber','location','status','barcode','institutionName','department','functionalArea','logo','vehicleregno','sourceoffunds','enginenumber','chassisnumber','make','purchaseyear','pvnumber','originallocation','currentlocation','replacementdate','amount','depreciationrate','annualdepreciation','accumulateddepreciation','netbookvalue','disposaldate','responsibleofficer','assetcondition' ] },
       building: { table: 'buildings', columns: ['assetName', 'assetType', 'description', 'ownership', 'institutionno', 'nearesttown', 'street', 'county', 'lrno', 'sizeofland', 'ownershipstatus', 'sourceoffunds', 'modeofacquisition', 'buildingtype', 'designateduse', 'nooffloors', 'area', 'valuation', 'annualdepreciation', 'estimatedusefullife', 'accumulateddepreciationrate', 'netbookvalue', 'annualrentalincome','institutionName'] },
-      intangibleassets: { table: 'intangibleassets', columns: ['assetName','institutionName','description','unitprice','currentValue'] },
-      biologicalassets: { table: 'biologicalassets', columns: ['assetName','assetType','institutionName','description','serialNumber','status','unitValue', 'location','tag'] },
+      intangibleassets: { table: 'intangibleassets', columns: ['assetName','institutionName','description','unitprice','currentValue','assetType','marketValue'] },
+      biologicalassets: { table: 'biologicalassets', columns: ['assetName','assetType','institutionName','description','serialNumber','status','unitValue', 'location','tag','marketValue'] },
       // other: { table: 'other_table', columns: ['column1', 'column2', /*...*/] },
       // Add more mappings as needed
     };
@@ -774,14 +727,23 @@ const generateBarcodeData = (assetDetails) => {
   const institutionShort = getShortName(assetDetails.institutionName);
   const departmentShort = getShortName(assetDetails.department);
   const functionalAreaShort = getShortName(assetDetails.functionalArea);
-  const assetNameShort = getShortName(assetDetails.assetName.replace(/\s/g, ''));
+  
+  // Add a null check for assetDetails.assetName
+  const assetNameShort = assetDetails.assetName ? getShortName(assetDetails.assetName.replace(/\s/g, '')) : '';
+  
   const id = assetDetails.id;
 
   return `${institutionShort}/${departmentShort}/${functionalAreaShort}/${assetNameShort}/${id}`;
 };
 
+
 const getShortName = (fullText) => {
-  // Logic to get the short name, e.g., first two characters
+  // Check if fullText is null or undefined
+  if (fullText == null) {
+    // Return some default value or handle the null case as required
+    return '';
+  }
+  // Otherwise, proceed with getting the short name
   return fullText.substring(0, 2).toUpperCase();
 };
 
@@ -814,15 +776,24 @@ const generateBarcodeTag = async (barcodeData) => {
 
 const generateFormattedString = (asset) => {
   const institutionShort = getInstitutionInitials(asset.institutionName).toUpperCase();
-  const departmentShort = asset.department.substring(0, 2).toUpperCase();
-  const functionalAreaShort = asset.functionalArea.substring(0, 2).toUpperCase();
+  
+  // Add null or undefined checks for asset.department and asset.functionalArea
+  const departmentShort = (asset.department && typeof asset.department === 'string') ? asset.department.substring(0, 2).toUpperCase() : '';
+  const functionalAreaShort = (asset.functionalArea && typeof asset.functionalArea === 'string') ? asset.functionalArea.substring(0, 2).toUpperCase() : '';
+  
   const assetNameShort = getShortForm(asset.assetName).toUpperCase();
   const id = asset.id;
 
   return `${institutionShort}/${departmentShort}/${functionalAreaShort}/${assetNameShort}/${id}`;
 };
 
+
 const getShortForm = (assetName) => {
+  // Add null or undefined check for assetName
+  if (!assetName) {
+    return '';
+  }
+
   // Split the asset name into words
   const words = assetName.split(' ');
 
@@ -837,6 +808,7 @@ const getShortForm = (assetName) => {
     return '';
   }
 };
+
 
 const getInstitutionInitials = (institutionName) => {
   // Logic to extract initials from institution name
@@ -887,6 +859,29 @@ const getLandsByInstitution = (institution) => {
     });
   });
 };
+
+const getBiologicalAssetsByInstitution = (institution) => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM biologicalassets WHERE institutionName = ?', [institution], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+const getIntangibleAssetsByInstitution = (institution) => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT * FROM intangibleassets WHERE institutionName = ?', [institution], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
 const getBuildingsByInstitution = (institution) => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM buildings WHERE institutionName = ?', [institution], (err, results) => {
@@ -926,9 +921,10 @@ app.post('/api/fetchAssetsByInstitution', async (req, res) => {
 
     // Fetch assets associated with the selected institution from the 'buildings' table
     const buildings = await getBuildingsByInstitution(institutionName);
-
+    const biologicalAssets = await getBiologicalAssetsByInstitution(institutionName);
+    const intangibleAssets = await getIntangibleAssetsByInstitution(institutionName);
     // Combine the results from different tables as needed
-    const allAssets = [...assets, ...lands, ...buildings,...equipment];
+    const allAssets = [...assets, ...lands, ...buildings,...equipment, ...biologicalAssets, ...intangibleAssets];
     // Separate assets into two arrays: one that needs barcodes and one that doesn't
     const assetsNeedingCodes = [];
     const assetsWithoutCodes = [];
@@ -1046,19 +1042,7 @@ const getAssetsByInstitutionAndDepartment = (institution, department) => {
   });
 };
 
-app.post('/api/fetchAssetsByInstitution', async (req, res) => {
-  const { institutionName } = req.body;
 
-  try {
-    // Fetch assets associated with the selected institution
-    const assets = await getAssetsByInstitution(institutionName);
-
-    res.status(200).json(assets);
-  } catch (error) {
-    console.error('Error fetching assets by institution:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 // Add this route to generate barcodes for a specific institution and department
 app.post('/api/generateBarcodesByInstitutionAndDepartment', async (req, res) => {
   const { institution, department } = req.body;
